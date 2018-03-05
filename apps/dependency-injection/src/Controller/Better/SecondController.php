@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Controller\Bad;
+namespace App\Controller\Better;
 
-use App\Services\Bad\Calculator;
+use App\Services\Better\CalculatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -12,15 +12,19 @@ use Symfony\Component\HttpFoundation\Response;
 class SecondController extends Controller
 {
     /**
+     * @param int $a
+     * @param int $b
+     * @param CalculatorInterface $calculator
+     *
      * @return Response
      */
-    public function indexAction($a, $b): Response
+    public function index($a, $b, CalculatorInterface $calculator): Response
     {
-        $helper = new Calculator();
+        $result = $calculator->add($a, $b);
 
         return $this->render(
             'bad/index.html.twig',
-            ['result' => $helper->add($a, $b)]
+            ['result' => $result]
         );
     }
 }

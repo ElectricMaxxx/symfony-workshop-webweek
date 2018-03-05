@@ -9,3 +9,15 @@ bad_first:
 bad_second:
   path: /bad/second/{a}/{b}
   defaults: {_controller: 'App\Controller\Bad\SecondController:indexAction', a: 2, b: 2 }
+
+better_first:
+  path: /better/first
+  defaults: {_controller: 'App\Controller\Better\FirstController:index' }
+
+better_second:
+  path: /better/second/{a}/{b}
+  defaults: {_controller: 'App\Controller\Better\SecondController:index', a: 2, b: 2 }
+
+task_index:
+  path: /path-task
+  defaults: { _controller: 'App\Controller\TaskController:index'}

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Better</title>
+</head>
+<body>
+{% if result %}
+<h1>Result: {{ result }}</h1>
+{% endif %}
+{{ form_start(form) }}
+{{ form_widget(form) }}
+<input type="submit" class="btn" value="Calculate" />
+{{ form_end(form) }}
+</body>
+</html>

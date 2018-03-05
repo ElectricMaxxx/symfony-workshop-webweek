@@ -1,11 +1,13 @@
 <?php
 
+namespace App\Tests\Unit\Service\Bad;
+
 use App\Services\Bad\Calculator;
 
 /**
  * @author Maximilian Berghoff <Maximilian.Berghoff@mayflower.de>
  */
-class CalculatorTest extends PHPUnit_Framework_TestCase
+class CalculatorTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var Calculator
