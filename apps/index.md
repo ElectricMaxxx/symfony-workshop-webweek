@@ -3,4 +3,5 @@
 
 You can find example apps for our workshop.
 
-* [block-x]()
+* [Dependency Injection](dependency-injection)
+* [CMS Features](cms-features)

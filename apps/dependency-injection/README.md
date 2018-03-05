@@ -4,7 +4,7 @@
 
 ```bash
 composer create-project symfony/skeleton dependency-injection
-cd dependency-injection7
+cd dependency-injection
 composer req server --dev
 composer require symfony/twig-bundle
 composer require --dev symfony/phpunit-bridge
