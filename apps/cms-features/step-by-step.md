@@ -1,6 +1,6 @@
 # Once upon a time ...
 
-* `composer create-project "symfony/skeleton:^3.4" cms-features` (nutzen hier 3.4, da CMF noch nicht vollständig kompatibel ist mit SF4)
+* `composer create-project "symfony/skeleton:^3.4" cms-features` (use 3.4, cause stable cmf is not completely compatible with SF4)
 * `cd cms-features`
 * `composer req twig`
 
@@ -11,7 +11,7 @@
 * `index` with parameter `articleName` passed to the template
 * created a paremter route
 
-# Dynamisches Routing
+# Dynamic Routing
 
 `composer req doctrine` (just to have doctrine default config)
 `composer req jackalope/jackalope-doctrine-dbal`
@@ -41,7 +41,7 @@ doctrine:
     dbal:
         # configure these for your database server
         url:     '%env(resolve:DATABASE_URL)%'
-        charset:  UTF8
+        charset:  UTF8 # just change that one, as i do not know if we support the other
 
 # cmf configuration
 doctrine_phpcr:
@@ -70,7 +70,7 @@ doctrine_cache:
         phpcr_nodes:
             type: file_system
 ```
-we won't get no new folder support in doctrine else:
+we won't get no new folder support in doctrine else (now we have to go instable, so we should have used SF4.0):
 `composer config minimum-stability dev`
 `composer config prefer-stable true`
 `composer req doctrine/phpcr-bundle:^2.0`
@@ -91,7 +91,8 @@ we won't get no new folder support in doctrine else:
 `composer req symfony/templating`
 `composer req symfony-cmf/routing-bundle`
 - rename `cmf_routing_bundle.yaml` to `cmf.yaml` (for now)
-- Lets start
+
+# Lets start with data
 
 `composer req doctrine/data-fixtures`
 
@@ -132,6 +133,7 @@ cmf_content:
 
 `composer req symfony-cmf/core-bundle`
 `composer req symfony-cmf/seo-bundle`
+
 ```yaml
 # add to cmf.yaml
 cmf_core:
