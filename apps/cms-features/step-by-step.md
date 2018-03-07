@@ -1,40 +1,46 @@
 # Once upon a time ...
 
-* Symfony mit CLI
-
-`composer create-project "symfony/skeleton:^3.3" nevercodealon-demo-app`
-
-* `\App\Controller\DefaultController` mit `indexAction` anlegen -> routes eintrag ändern, Response nur mit `new Response`
-* `extends Controller` `$this->render()` -> Fehler
-`composer req twig`
-
-* Einfach tun was man uns sagt
-* * TwigBundle wurde installiert
-* * Template anlegen in `templates/default/index.html.twig`
+* `composer create-project "symfony/skeleton:^3.4" cms-features` (nutzen hier 3.4, da CMF noch nicht vollständig kompatibel ist mit SF4)
+* `cd cms-features`
+* `composer req twig`
 
 # More Sites
 
-* easy, Symfony ist ein MVC, Routing macht Spass, also {Task für Publikum}
-* Anlegen: Seite, die einen speziellen Artikel skizzieren soll
-* `ArticleController` angelegt
-* `indexAction` mit Parameter `articleName`, der einem Template überreicht wird
-* Route angelegt, sollte Parameter enthalten
+* more sites, use parameters to display a kind of an article site
+* `ArticleController` created
+* `index` with parameter `articleName` passed to the template
+* created a paremter route
 
 # Dynamisches Routing
 
+`composer req doctrine` (just to have doctrine default config)
 `composer req jackalope/jackalope-doctrine-dbal`
 `composer req doctrine/doctrine-cache-bundle`
-`composer req doctrine/phpcr-odm`
+`composer req doctrine/phpcr-odm:^2.0`
 
 Config:
 
+* add environment variables
+```bash
+# add to .env .env.dist
+
+DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db
+
+###>symfony-cmf###
+PHPCR_WORKSPACE=default
+PHPCR_USER=admin
+PHPCR_PASSWORD=admin
+###< symfony-cmf ###
+```
+
 ```yaml
 # into doctrine.yaml
-# for jackalope-doctrine-dbal
+# for jackalope-doctrine-dbal, should be still there, done by doctrine reciepe
+
 doctrine:
     dbal:
-        driver:   '%env(DATABASE_DRIVER)%'
-        path:     '%env(DATABASE_PATH)%'
+        # configure these for your database server
+        url:     '%env(resolve:DATABASE_URL)%'
         charset:  UTF8
 
 # cmf configuration
@@ -64,8 +70,10 @@ doctrine_cache:
         phpcr_nodes:
             type: file_system
 ```
-`composer req doctrine/phpcr-bundle`
-`composer req doctrine/doctrine-bundle`
+we won't get no new folder support in doctrine else:
+`composer config minimum-stability dev`
+`composer config prefer-stable true`
+`composer req doctrine/phpcr-bundle:^2.0`
 
 - Init database and its repository
 
@@ -82,24 +90,27 @@ doctrine_cache:
 `composer req validator`
 `composer req symfony/templating`
 `composer req symfony-cmf/routing-bundle`
-
-- Zum richtig los legen und skizzieren
+- rename `cmf_routing_bundle.yaml` to `cmf.yaml` (for now)
+- Lets start
 
 `composer req doctrine/data-fixtures`
 
-- erstelle `App\AppBundle` (symfony 4 ist Bundle-Less, oder hat es zum Ziel) und trage es in `bundles.php` ein
-
-- erstelle erste Route im Fixture-Loader (was ist ein Fixture-Loader)
-- - Nutze `NodeHelper` zum generieren eines eigenen Pfades – schließlich wollen wirs ja in einem Repo 
-ablegen
-- - Hole root Route und erstelle Route mit ihr als parent und defaults auf neuen Controller
+- create first routes in datafixtures
+- Use `NodeHelper` to generate generic paths
+- get root route and create route to you controller
 
 # Content
 
 `composer req security`
 `composer req symfony-cmf/content-bundle`
 
-- In `cmf_content.yaml`
+```yaml
+# add to cmf.yaml
+framework:
+    templating: { engines: ['twig'] }
+```
+
+- add to `cmf.yaml`
 
 ```yaml
 cmf_content:
@@ -107,23 +118,22 @@ cmf_content:
         phpcr: ~
 ```
 
-- erstelle root node für content wie beim Routing
-- erstelle `StaticContent` mit name, title, body, und parentDocument
-- `doctrine:phpcr:node:dump` -> man siehts
-- Noch kein Bezug zur Route? Wie stellen wir das an?
-- Erst mal die Erstellung der Route zum Content holen
-- Zusammenführen durch `$route->setContent()`
-- Alles was zum  `DynamicRoutingController` führte kann jetzt weg
-- `doctrine:phpcr:node:dump` -> man sieht? Nö noch nicht
-- `doctrine:phpcr:node:dump --props` nun wirds klar
-- URL aufrufen
-- template anlegen
-- geht dann 
+- create content with `StaticContent` with name, title, body and parentDocument
+- `doctrine:phpcr:node:dump` -> you should see it
+- what about routes?
+- `$route->setContent()`
+- `doctrine:phpcr:node:dump` -> you should see a tree
+- `doctrine:phpcr:node:dump --props` clearer?
+- call url
+- create templates
+- works?
 
-# Translatable
+# Translatable/Seo
 
 `composer req symfony-cmf/core-bundle`
+`composer req symfony-cmf/seo-bundle`
 ```yaml
+# add to cmf.yaml
 cmf_core:
     multilang:
         locales: [en,de]
@@ -134,16 +144,47 @@ lunetics_locale:
         - cookie
         - browser
     allowed_locales: [en,de]
+    
+# add to doctrine
+doctrine_phpcr:
+    odm:
+        locales:
+            en: [de]
+            de: [en]
+
+# add to cmf.yaml
+cmf_menu:
+    persistence:
+        phpcr: ~
+# add to routing
+cmf_routing:
+    dynamic:
+        persistence:
+            templates_by_class:
+                Symfony\Cmf\Bundle\ContentBundle\Doctrine\Phpcr\StaticContent: content/first.html.twig
 ```
 `composer req lunetics/locale-bundle`
-- zu `doctrine_phpcr.odm`:
 ```yaml
+# add under doctrine_phpcr.odm:
         locales:
             en: [de]
             de: [en]
 ```
+
+```yaml
+#add to routes.yaml
+home_redirect:
+    path: /
+    defaults:
+        _controller: lunetics_locale.switcher_controller:switchAction
+        route: '/cms/routes/%locale%'
+        statusCode: 301
+        useReferrer: false
+```
 - content + routing + bind Translation
 - load fixtures
 - see nodes
+
+- navigate to `/` (redirect), `/en` (static route persisted), `/en/my-first-route` (first dynamic route)
 
 
